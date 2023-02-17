@@ -160,6 +160,9 @@ app.use(bodyparser.urlencoded({
 app.use(bodyparser.json());
 // app.use("/v3",primaryRoutes);
 app.set('view engine', 'ejs');
+app.get("/",async(req,res)=>{
+    res.render("home");
+})
 app.post("/profileSubmit",async(req,res)=>
 {
     try{
