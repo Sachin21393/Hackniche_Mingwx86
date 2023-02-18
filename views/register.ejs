@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -43,10 +45,15 @@
   <body>
     <nav
       class="navbar navbar-expand-lg navbar-light"
-      style="background-color: white"
+      style="background-color: white; border-bottom: 1px solid rgb(51, 26, 150)"
     >
       <div class="container">
-        <a class="navbar-brand" href="#">HACKERWORLD</a>
+        <a
+          class="navbar-brand"
+          href="#"
+          style="color: rgb(51, 26, 150); font-weight: 600"
+          >HACKERWORLD</a
+        >
         <button
           class="navbar-toggler"
           type="button"
@@ -58,17 +65,18 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <!-- <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#"
-                >HACKERWORLD</a
-              >
-            </li> -->
-          </ul>
+        
+          <!-- </ul> -->
+          
           <form class="d-flex navbar-nav">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Login</a>
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="#"
+                style="color: rgb(51, 26, 150)"
+                >Login</a
+              >
             </li>
           </form>
         </div>
@@ -80,13 +88,16 @@
           class="col-sm-6"
           style="padding-left: 5%; padding-right: 5%; padding-top: 7%"
         >
-          <h1 class="mb-3 text-center">Register</h1>
+          <h1 class="mb-3 text-center" style="color: rgb(51, 26, 150)">
+            Register
+          </h1>
           <br /><br />
-          <form action="/create" method="post">
+          <form style="color: rgb(51, 26, 150) " action="/create" method="post">
             <div class="mb-3">
               <label for="exampleInputEmail1" class="form-label">Name</label>
               <input
                 type="name"
+                name="name"
                 class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
@@ -98,8 +109,8 @@
               >
               <input
                 type="email"
-                class="form-control"
                 name="email"
+                class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
               />
@@ -116,13 +127,21 @@
               />
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button
+              type="submit"
+              class="btn"
+              style="background-color: rgb(51, 26, 150); color: white"
+            >
+              Submit
+            </button>
           </form>
         </div>
-        <div
-          class="col-sm-6"
-          style="background-color: yellow; height: 93vh"
-        ></div>
+
+        <div class="col-sm-6" style="margin-top: 7%">
+          <div class="container text-center">
+            <img src="/imageback1.jpg" style="width: 80%" alt="" />
+          </div>
+        </div>
       </div>
     </div>
 

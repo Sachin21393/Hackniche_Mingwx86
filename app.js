@@ -337,6 +337,7 @@ app.post("/profileSubmit",async(req,res)=>
 app.post("/v2profileSubmit",async(req,res)=>
 {
     try{
+        console.log(req.body);
         let separatedArray=[];
         let work=[],proj=[];
         let string=req.body.tech;
