@@ -189,46 +189,54 @@
       </div>
     </nav>
     <ul class="timeline" style="margin-top: 10%">
+     
       <li
-        data-year="2017"
-        data-text="Lorem ipsum dolor sit amet, consectetur."
+      
+        data-text="Submitted"
       ></li>
-      <li
-        data-year="2018"
-        data-text="Lorem ipsum dolor sit amet, consectetur."
+   
+     <li 
+       
+        data-text="Under Review"
       ></li>
-      <li
-        data-year="2019"
-        data-text="Lorem ipsum dolor sit amet, consectetur."
+      <%if(data.status=="Resume Viewed") { %>
+      <li 
+       
+        data-text="Resume Reviewed"
       ></li>
-      <li
-        data-year="2020"
-        data-text="Lorem ipsum dolor sit amet, consectetur."
-      ></li>
-      <li
-        data-year="2021"
-        data-text="Lorem ipsum dolor sit amet, consectetur."
-      ></li>
+   
+      <%} %>
+      <%if(data.status=="Rejected") { %>
+        <li 
+         
+          data-text="Rejected"
+        ></li>
+     
+        <%} %>
+     
+   
     </ul>
     <br />
     <hr />
     <div class="container">
+    
+       <% for(let i=0;i<data.teamids.length;i++) { %>
+ <%  let ele=data.teamids[i] %>
+     
       <div class="flex-container">
         <div class="flex-item-left grad">
           <div class="container-fluid">
-            <h3>Suraj Chavan</h3>
+            <h3><%=ele.name%></h3>
             <hr />
             <h6>Forte: Frontend development</h6>
-            <h6>Skills: EJS, JavaScript, HTML</h6>
-            <h6>Email: surajchavan@gmail.com</h6>
+            <h6><%=ele.Skills%></h6>
+            <h6>Email: <%=ele.email%></h6>
           </div>
         </div>
 
-        <div class="flex-item-right grad">
-          <div class="container-fluid">
-            <h3>HackUpar</h3>
-          </div>
-        </div>
+   <%   } %>
+
+       
       </div>
     </div>
     <script

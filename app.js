@@ -2,11 +2,14 @@ const express=require("express");
 const {CustomResponse} = require("./ApiConstants");
 const APIConstants=require("./ApiConstants")
 const ejs=require("ejs");
+// const ejsLint = require('ejs-lint');
 const cloudinary = require('cloudinary').v2
+var wkhtmltopdf = require('wkhtmltopdf');
 const multer=require("multer");
 const path=require("path")
 var unirest = require("unirest");
 const fs = require('fs');
+var options = { format: 'Letter' };
 const ResumeParser = require('simple-resume-parser');
 const app=express();
 const bodyparser=require("body-parser");
@@ -66,6 +69,7 @@ stack.add("cloud");
 let teamid="";
 
 const  mongoose=require("mongoose");
+const { rawListeners } = require("process");
 
 const { Schema } = mongoose;
 
@@ -120,11 +124,12 @@ const teamnameSchema={
     backendScore:Number,
     workExpScore:Number,
     projectScore:Number,
-    overAll:Number
+    overAll:Number,
+    status:{type:String, default:"Under Review"}
     
 
 }
-
+let hackathonid="";
 const hackathonSchema={
     name:String,
     mode:String,
@@ -161,14 +166,236 @@ app.use(bodyparser.json());
 // app.use("/v3",primaryRoutes);
 app.set('view engine', 'ejs');
 app.get("/",async(req,res)=>{
-    res.render("home");
+    const data=await hackathon.find({});
+
+    res.render("home",{data:data});
 })
+app.get("/register",async(req,res)=>{
+    res.render("register")
+})
+
+app.get("/organize",async(req,res)=>{
+    res.render("newhack")
+})
+app.get("/fill",async(req,res)=>{
+    res.render("profile");
+})
+app.get("/timeline",async(req,res)=>{
+    const data=await team.findById(teamid).populate("teamids");
+
+    res.render("timeline",{data:data});
+})
+app.get("/resume",async(req,res)=>{
+    res.render("resume")
+;})
+app.get("/v2hackathon",async(req,res)=>{
+    const result=await hackathon.find({});
+    res.json(result);
+})
+app.get("/top",async(req,res)=>{
+    const data=await team.find({}).sort({"overAll":-1});
+    res.render("top40",{data:data});
+})
+let work=[]
+app.post("/detailsTeam",async(req,res)=>{
+    let id=req.body.teamId
+    teamid=id;
+    // console.log(id);
+    const data=await team.findById(id).populate("teamids");
+    // const work=data.teamids[0].Work;
+    let work=[]
+    data.teamids.forEach(ele=>{
+        // console.log(ele.Work);
+        ele.Work.forEach(ele1=>{
+            work.push(ele1);
+        })
+
+    })
+    console.log(work);
+    const update=await team.findByIdAndUpdate(id,{"status":"Resume Viewed"});
+    // res.render("resume",{data:data,work:work})
+    res.render("resume",{data:data,work:work});
+
+
+})
+app.post("/accepted",async(req,res)=>{
+    const u1=await team.findByIdAndUpdate(teamid,{"status":"Accepted"},{new:true});
+    res.redirect("/top");
+})
+app.post("/reject",async(req,res)=>{
+    const u1=await team.findByIdAndUpdate(teamid,{"status":"Rejected"},{new:true});
+    res.redirect("/top");
+})
+app.post("/generate",async(req,res)=>{
+    const data=await team.findById(teamid).populate("teamids");
+    // const work=data.teamids[0].Work;
+    let work=[]
+    data.teamids.forEach(ele=>{
+        // console.log(ele.Work);
+        ele.Work.forEach(ele1=>{
+            work.push(ele1);
+        })
+
+    })
+    console.log(work);
+    // res.render("resume",{data:data,work:work})
+    res.render("resume",{data:data,work:work},function(err,html){
+                // console.log(html);
+                let string =String(html)
+                console.log(string);
+                
+                wkhtmltopdf(string, {
+                    output:  `${data.teamname} Resume.pdf`
+        ,            pageSize: 'letter'
+                });
+            });
+})
+
 app.post("/profileSubmit",async(req,res)=>
 {
     try{
+        let separatedArray=[];
+        let work=[],proj=[];
+        let string=req.body.tech;
+    for(let i=0;i<1;i++){
+        let obj={
+            title:req.body.title1,
+            Brief:req.body.Brief1,
+            TechStack:req.body.TechStack1
+
+        }
+         let obj1={
+            title:req.body.title2,
+            Brief:req.body.Brief2,
+            TechStack:req.body.TechStack2
+
+        }
+        work.push(obj);
+        work.push(obj1);
+        let obj2={
+            title:req.body.title3,
+            Brief:req.body.Brief3,
+            TechStack:req.body.TechStack3
+
+        }
+         let obj3={
+            title:req.body.title4,
+            Brief:req.body.Brief4,
+            TechStack:req.body.TechStack4
+
+        }
+        proj.push(obj2);
+        proj.push(obj3);
+
+        
+    }
+        console.log(string);
+        let previousIndex = 0;
+     
+        for(i = 0; i < string.length; i++) {
+         
+        // check the character for a comma
+        if (string[i] == ',') {
+         
+        // split the string from the last index
+        // to the comma
+        separated = string.slice(previousIndex, i);
+        separatedArray.push(separated);
+         
+        // update the index of the last string
+        previousIndex = i + 1;
+        }
+        }
+         
+        // push the last string into the array
+        separatedArray.push(string.slice(previousIndex, i));
+
     let data=req.body;
     console.log(data);
-    const obj=new Profile({...data});
+    const obj=new Profile({...data,Skills:separatedArray,Work:work,Projects:proj});
+    const result=await obj.save();
+    console.log(teamid);
+    const update=await team.findByIdAndUpdate(teamid,{$push:{teamids:result._id}});
+    console.log(result);
+    if(result){
+    res.json({
+        "data":result
+    })
+}
+    // return CustomResponse(null, APIConstants.Status.Success, APIConstants.StatusCode.Ok, result, null);
+    }catch(e){
+        console.log(e.message);
+        res.json({
+            "error":e
+        })
+        // return CustomResponse('Error while fetching signUp!', APIConstants.Status.Failure, APIConstants.StatusCode.BadRequest, null, error.message);
+
+    }
+
+
+})
+app.post("/v2profileSubmit",async(req,res)=>
+{
+    try{
+        let separatedArray=[];
+        let work=[],proj=[];
+        let string=req.body.tech;
+    for(let i=0;i<1;i++){
+        let obj={
+            title:req.body.title1,
+            Brief:req.body.Brief1,
+            TechStack:req.body.TechStack1
+
+        }
+         let obj1={
+            title:req.body.title2,
+            Brief:req.body.Brief2,
+            TechStack:req.body.TechStack2
+
+        }
+        work.push(obj);
+        work.push(obj1);
+        let obj2={
+            title:req.body.title3,
+            Brief:req.body.Brief3,
+            TechStack:req.body.TechStack3
+
+        }
+         let obj3={
+            title:req.body.title4,
+            Brief:req.body.Brief4,
+            TechStack:req.body.TechStack4
+
+        }
+        proj.push(obj2);
+        proj.push(obj3);
+
+        
+    }
+        console.log(string);
+        let previousIndex = 0;
+     
+        for(i = 0; i < string.length; i++) {
+         
+        // check the character for a comma
+        if (string[i] == ',') {
+         
+        // split the string from the last index
+        // to the comma
+        separated = string.slice(previousIndex, i);
+        separatedArray.push(separated);
+         
+        // update the index of the last string
+        previousIndex = i + 1;
+        }
+        }
+         
+        // push the last string into the array
+        separatedArray.push(string.slice(previousIndex, i));
+
+    let data=req.body;
+    console.log(data);
+    const obj=new Profile({...data,Skills:separatedArray,Work:work,Projects:proj});
     const result=await obj.save();
     console.log(teamid);
     const update=await team.findByIdAndUpdate(teamid,{$push:{teamids:result._id}});
@@ -193,6 +420,9 @@ app.post("/profileSubmit",async(req,res)=>
 app.get("/check",async(req,res)=>{
     res.render("dummy")
 })
+app.get("/team",async(req,res)=>{
+    res.render("teamname")
+})
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads')
@@ -203,7 +433,7 @@ var storage = multer.diskStorage({
 });
  
 var upload = multer({ storage: storage });
-app.post('/k', upload.single('image'),async (req, res, next) => {
+app.post('/host', upload.single('image'),async (req, res, next) => {
     console.log(req.file.path);
     let imagee=req.file.path;
 let imag=fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename));
@@ -224,14 +454,18 @@ app.post("/create",async(req,res)=>{
     const data=req.body;
     const obj=new User({...data});
     const result=await obj.save();
+    res.render("login");
 })
 app.post("/login",async(req,res)=>{
 let email=req.body.email;
 let password=req.body.password;
+
 User.findOne({email:email},(er,data)=>{
+    console.log(data);
     if(data.password==password){
 userid=data._id;
-console.log("done");
+// console.log("done");
+res.redirect("/")
     }
 })
 })
@@ -239,15 +473,17 @@ app.get("/gethackathon",async(req,res)=>{
    const data=await hackathon.find({})
    res.json(data);
 })
+
 app.post("/registerHackathon",async(req,res)=>{
     let hackid=req.body.hackid;
     console.log(teamid);
     console.log(hackid);
+    hackathonid=hackid;
 
     const u1=await User.findOneAndUpdate({_id:userid},{$push:{hackid:hackid}},{new:true});
-    const u2=await hackathon.findByIdAndUpdate(hackid,{$push:{teamid:teamid}});
 
-    res.json(u1)
+res.render("teamname")
+    // res.json(u1)
 
 
 
@@ -297,14 +533,23 @@ app.post("/kdd",async(req,res,next)=>{
 //         console.log(e.message);
 //     }
 })
+app.get("/login",async(req,res)=>{
+    res.render("login")
+})
 app.post("/teamName",async(req,res)=>{
     let data=req.body;
     const obj=new team({...data});
     const result=await obj.save();
     teamid=result._id;
-    res.json({
-        "data":result
-    })
+    console.log(hackathonid);
+    console.log(teamid);
+
+    const u2=await hackathon.findByIdAndUpdate(hackathonid,{$push:{teamid:teamid}});
+
+res.render("profile");
+    // res.json({
+    //     "data":result
+    // })
 })
 app.get('/details',async(req,res)=>{
     // let separatedArray1 = [];
@@ -595,11 +840,25 @@ res.json(data)
 //     console.error(error);
 //   });
 // })
-app.post('/top',async(req,res)=>{
+// app.get()
+app.post('/filter',async(req,res)=>{
     let top=req.body.no;
-    const data=await team.find({}).sort({"overAll":-1});
+    const data=await team.find({}).sort({"overAll":-1}).limit(top).exec();
+    res.render("top40",{data:data})
     
 })
+app.post("/filter1",async(req,res)=>{
+let filter=req.body.filter;
+if(filter=="project"){
+    const data=await team.find({}).sort({"projectScore":-1}).limit(4).exec();
+    res.render("top40",{data:data})
+}else{
+    const data=await team.find({}).sort({"workExpScore":-1}).limit(4).exec();
+    res.render("top40",{data:data})
+}
+console.log(filter);
+})
+// app.post()
 app.listen(80,async(req,res)=>{
     console.log("listening on port 80");
 })

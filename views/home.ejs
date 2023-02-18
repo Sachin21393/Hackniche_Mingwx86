@@ -115,7 +115,7 @@
     <div
       class="container-fluid"
       style="
-        background-image: url(back1.png);
+        background-image: url(/back1.png);
         background-size: cover;
         background-repeat: no-repeat;
         padding-top: 2%;
@@ -180,18 +180,26 @@
           class="container-fluid"
           style="padding-top: 2%; padding-bottom: 2%"
         >
+        <form action="/registerHackathon" method="post">
+        <% data.forEach(ele=>{ %>
+
+      
           <div class="row grad">
             <div class="col-sm-6">
-              <img src="hack1.png" alt="" style="width: 100%; height: auto" />
+              <img src="<%=ele.imglink%>" alt="" style="width: 100%; height: auto" />
             </div>
             <div class="col-sm-6 p-4">
-              <h3>Hack-To-Win</h3>
-              <p>Online</p>
-              <p>2-4</p>
-              <p>Blockchain,Web/App,etc.</p>
-              <button
-                type="submit"
+              <h3><%=ele.name%></h3>
+              <h3><%=ele.tagline%></h3>
+
+
+              <p><%=ele.mode%></p>
+              <input type="hidden" name="hackid" value="<%=ele._id%>">
+              <p><%=ele.Theme%></p>
+               <button
+              type="submit"
                 style="
+                
                   padding: 2% 4%;
                   border-radius: 10px;
                   border: 0;
@@ -204,13 +212,15 @@
                   color: white;
                 "
               >
-                View more
+              Register
               </button>
             </div>
           </div>
+     <%   }) %>
+        </form>
           <br />
           <br />
-          <div
+          <!-- <div
             class="row grad"
             style="
               border-top: 10px solid black;
@@ -220,7 +230,7 @@
             "
           >
             <div class="col-sm-6">
-              <img src="hack1.png" alt="" style="width: 100%; height: auto" />
+              <img src="/hack1.png" alt="" style="width: 100%; height: auto" />
             </div>
             <div class="col-sm-6 p-4">
               <h3>Hack-To-Win</h3>
@@ -257,7 +267,7 @@
             "
           >
             <div class="col-sm-6">
-              <img src="hack1.png" alt="" style="width: 100%; height: auto" />
+              <img src="/hack1.png" alt="" style="width: 100%; height: auto" />
             </div>
             <div class="col-sm-6 p-4">
               <h3>Hack-To-Win</h3>
@@ -286,7 +296,7 @@
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="d-grid">
           <button
             class="btn btn-primary"

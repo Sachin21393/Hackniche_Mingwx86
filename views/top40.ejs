@@ -12,6 +12,8 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,25 +36,25 @@
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
           0 6px 20px 0 rgba(0, 0, 0, 0.19);
       }
-      .flex-container {
-        display: flex;
+      .grid-container {
+        display: grid;
+        gap: 2% 2%;
+        grid-template-columns: auto auto;
         flex-direction: row;
-        gap: 50px;
       }
 
-      .flex-item-left {
+      .grid-item {
         padding: 1.5%;
-        flex: 50%;
         box-shadow: 0 0.2rem 1.2rem rgba(0, 0, 0, 0.2);
         border-radius: 15px;
       }
-
+/* 
       .flex-item-right {
         padding: 1.5%;
         flex: 50%;
         box-shadow: 0 0.2rem 1.2rem rgba(0, 0, 0, 0.2);
         border-radius: 15px;
-      }
+      } */
       .btnad {
         margin-left: 1%;
         margin-right: 1%;
@@ -105,47 +107,87 @@
     </nav>
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
       <li class="nav-item mx-auto" role="presentation">
+        <div class="container d-flex " style="margin-left: 2%;" >
+          <form action="/filter1" method="post">
+          <input type="hidden" id="filter" name="filter" value="">
         <button
-          class="nav-link active"
-          id="pills-home-tab"
+        type="submit"
+          class="nav-link active me-2"
+          id="project"
           data-bs-toggle="pill"
           data-bs-target="#pills-home"
           type="button"
           role="tab"
           aria-controls="pills-home"
           aria-selected="true"
+          value="project"
+          onclick="f()"
         >
-          Home
+          Project
         </button>
+        <button 
+        type="submit"
+          class="nav-link active"
+          id="work"
+          data-bs-toggle="pill"
+          data-bs-target="#pills-home"
+          type="button"
+          role="tab"
+          aria-controls="pills-home"
+          aria-selected="true"
+          value="work"
+          onclick="f1()"
+        >
+          WorkExp
+        </button>
+      </form>
+     
+        </div>
       </li>
 
       <li class="nav-item mx-auto" role="presentation">
+
+        <form action="/filter" method="post">
+          <div class="input-group">
+            <div class="form-outline">
+              <input type="search" id="form1" name="no" class="form-control" placeholder="Enter no of top team to filter"/>
+              <!-- <label class="form-label" for="form1">Search</label> -->
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100px;height: 37px;">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+          <!-- <p>Top</p><input type="text" name="no">
         <button
+        type="submi"
           class="nav-link"
           id="pills-contact-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#pills-contact"
-          type="button"
-          role="tab"
-          aria-controls="pills-contact"
-          aria-selected="false"
         >
-          Contact
-        </button>
+          
+        </button> -->
+      </form>
       </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
+   
       <div
         class="tab-pane fade show active"
         id="pills-home"
         role="tabpanel"
         aria-labelledby="pills-home-tab"
       >
+    
+
+     
         <div class="container">
-          <div class="flex-container">
-            <div class="flex-item-left">
+          
+          <div class="grid-container">
+            <% data.forEach(ele=>{ %>
+              <form action="/detailsTeam" method="post">
+            <div class="grid-item">
+              <input type="hidden" name="teamId" value="<%=ele._id%>">
               <div class="container-fluid">
-                <h3 class="text-center">MinGWx86</h3>
+                <h3 class="text-center"><%=ele.teamname%></h3>
                 <hr />
                 <div class="d-flex">
                   <a
@@ -157,31 +199,39 @@
                     "
                     ><p class="fs-4">Schedule</p></a
                   >
-                  <a href="" style="text-decoration: none"
-                    ><p class="fs-4">Reschedule</p></a
-                  >
+                 <button type="submit">
+                    Details
+                  
+                </button>
                 </div>
                 <hr style="margin-top: 0" />
                 <p class="fs-5 mt-2" style="margin-left: 1%">
-                  Frontend Score: <br />
-                  Backend Score: <br />
-                  Overall Score:
+                  Frontend Score:<%=ele.frontendScore%> <br />
+                  Backend Score:<%=ele.backendScore%> <br />
+                  Overall Score: <%=ele.overAll%>
                 </p>
 
                 <div class="d-flex mt-2">
-                  <button class="btn btn-success btnad">Accept</button>
-                  <button class="btn btn-danger btnad">Decline</button>
+                  <form action="/accept" method="post">
+                  <button type="submit" class="btn btn-success btnad">Accept</button>
+                </form>
+                <form action="/reject" method="post">
+                  <button type="submit" class="btn btn-danger btnad">Decline</button>
+                </form>
                 </div>
               </div>
             </div>
-
-            <div class="flex-item-right">
+          </form>
+            <%  }) %>
+            <!-- <div class="flex-item-">
               <div class="container-fluid">
                 <h3>HackUpar</h3>
               </div>
-            </div>
+            </div> -->
           </div>
+          
         </div>
+
       </div>
 
       <div
@@ -228,5 +278,15 @@
       integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
       crossorigin="anonymous"
     ></script>
+    <script>
+      function f(){
+        let temp=document.getElementById("project").value;
+        document.getElementById("filter").value=temp
+      }
+      function f1(){
+       let temp=document.getElementById("work").value
+        document.getElementById("filter").value=temp
+      }
+    </script>
   </body>
 </html>

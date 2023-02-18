@@ -268,11 +268,21 @@
         </ul>
         <!-- Step Wise Form Content -->
         <form
+        action="/host"
           id="userAccountSetupForm"
           name="userAccountSetupForm"
           enctype="multipart/form-data"
           method="POST"
         >
+        <!-- name:String,
+        mode:String,
+        tagline:String,
+        About:String,
+        Theme:String,
+        Venue:String,
+        imglink:String,
+        Links:String,S
+        Fees:String, -->
           <!-- Step 1 Content -->
           <section id="step-1" class="form-step">
             <h2 class="font-normal">Basic Info</h2>
@@ -280,7 +290,7 @@
             <label for="name" class="form-label mt-3">Name</label>
             <input type="text" name="name" class="form-control" />
             <label for="mode" class="form-label mt-3">Mode</label>
-            <input type="text" name="name" class="form-control" />
+            <input type="text" name="mode" class="form-control" />
             <label for="tagline" class="form-label mt-3">Tagline</label>
             <input type="text" name="tagline" class="form-control" />
             <label for="about" class="form-label mt-3">About</label>
@@ -314,7 +324,7 @@
               <label for="venue" class="form-label mt-3">Venue</label>
               <input type="text" name="venue" class="form-control" />
               <label for="venue" class="form-label mt-3">Image</label>
-              <input class="form-control" type="file" upload="*" />
+              <input type="file" id="image" name="image" value="" required>
               <label for="links" class="form-label mt-3">Links</label>
               <input type="text" name="links" class="form-control" />
               <label for="fees" class="form-label mt-3">Fees</label>
